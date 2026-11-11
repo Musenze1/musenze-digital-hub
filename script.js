@@ -1,4 +1,4 @@
-const OWNER_PIN = "1234";
+const OWNER_PIN = "0811";
 
 // Load saved text edits on startup
 document.addEventListener("DOMContentLoaded", () => {
