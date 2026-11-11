@@ -1,4 +1,4 @@
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "0811";
 
 const loginSection = document.getElementById("login-section");
 const dashboardSection = document.getElementById("dashboard-section");
