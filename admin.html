@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | Musenze Digital Hub & Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">MUSENZE ADMIN PORTAL</div>
+    <nav>
+      <a href="index.html" class="btn-outline">Back to Website</a>
+    </nav>
+  </header>
+
+  <!-- PIN Login Box -->
+  <section id="login-section" class="container">
+    <div class="form-box" style="text-align:center;">
+      <h2>Owner Authentication</h2>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Enter your Admin PIN to manage studio bookings.</p>
+      <div class="form-group">
+        <input type="password" id="admin-pin-input" placeholder="Enter PIN (Default: 1234)" style="text-align:center;">
+      </div>
+      <button id="unlock-btn" class="btn-primary" style="width:100%;">Unlock Dashboard</button>
+    </div>
+  </section>
+
+  <!-- Main Admin Dashboard -->
+  <section id="dashboard-section" class="container hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
+      <h2>Bookings Management</h2>
+      <button id="export-csv-btn" class="btn-primary">Export CSV Spreadsheet</button>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="stat-total">0</h3>
+        <p>Total Bookings</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="stat-pending">0</h3>
+        <p>Pending</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="stat-completed">0</h3>
+        <p>Completed</p>
+      </div>
+    </div>
+
+    <!-- Responsive Bookings Table -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Contact</th>
+            <th>Service</th>
+            <th>Date</th>
+            <th>Details</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-table-body">
+          <!-- Rows populated by admin.js -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="admin.js"></script>
+</body>
+</html>
