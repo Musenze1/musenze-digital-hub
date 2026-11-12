@@ -1,10 +1,11 @@
-import { initializeApp } from "https://gstatic.com";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://gstatic.com";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://gstatic.com";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+// --- 1. FIREBASE CONFIGURATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyCFyKDyBwcELJ0chSuwkeqNjh1J6ZuuiAs",
-  authDomain: "musenze-digital-hub.firebaseapp.com",
+  authDomain: "musenze-digital-hub.firebaseapp.com", // FIXED: Added the correct domain
   projectId: "musenze-digital-hub",
   storageBucket: "musenze-digital-hub.firebasestorage.app",
   messagingSenderId: "189794048992",
@@ -16,24 +17,32 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// --- 2. DOM ELEMENTS ---
 const loginSection = document.getElementById("login-section");
 const dashboardSection = document.getElementById("dashboard-section");
 const logoutBtn = document.getElementById("logout-btn");
 const loginForm = document.getElementById("admin-login-form");
 const loginError = document.getElementById("login-error");
+const submitBtn = document.getElementById("login-submit-btn");
 
 let cachedBookings = [];
+
+// --- 3. AUTHENTICATION (LOGIN/LOGOUT) ---
 
 // Monitor Login State
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // User is logged in
     loginSection.classList.add("hidden");
     dashboardSection.classList.remove("hidden");
     logoutBtn.classList.remove("hidden");
+    
+    // Load all admin data
     loadAdminData();
     renderAdminPosts();
     loadSavedTextIntoForm();
   } else {
+    // User is logged out
     loginSection.classList.remove("hidden");
     dashboardSection.classList.add("hidden");
     logoutBtn.classList.add("hidden");
@@ -41,33 +50,48 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // Handle Email & Password Sign In
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  loginError.innerText = "";
-  const email = document.getElementById("admin-email").value.trim();
-  const password = document.getElementById("admin-password").value;
-  const submitBtn = document.getElementById("login-submit-btn");
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginError.innerText = "";
+    
+    const email = document.getElementById("admin-email").value.trim();
+    const password = document.getElementById("admin-password").value;
 
-  submitBtn.disabled = true;
-  submitBtn.innerText = "Signing in...";
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Signing in...";
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    loginForm.reset();
-  } catch (err) {
-    loginError.innerText = "Login failed: " + err.message;
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Sign In to Dashboard";
-  }
-});
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      loginForm.reset(); // Clear form on success
+    } catch (err) {
+      // Give specific error messages based on Firebase errors
+      if (err.code === "auth/user-not-found") {
+        loginError.innerText = "Error: No admin account found with this email.";
+      } else if (err.code === "auth/wrong-password") {
+        loginError.innerText = "Error: Incorrect password. Please try again.";
+      } else if (err.code === "auth/invalid-credential") {
+        loginError.innerText = "Error: Invalid email or password.";
+      } else {
+        loginError.innerText = "Login failed: " + err.message;
+      }
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Sign In to Dashboard";
+    }
+  });
+}
 
 // Handle Logout
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-});
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+}
 
-// 1. Publish New Post to Firestore
+// --- 4. ADMIN DASHBOARD FUNCTIONS ---
+
+// Publish New Post to Firestore
 const postForm = document.getElementById("post-form");
 if (postForm) {
   postForm.addEventListener("submit", async (e) => {
@@ -100,8 +124,11 @@ if (postForm) {
   });
 }
 
+// Render Admin Posts list
 async function renderAdminPosts() {
   const container = document.getElementById("admin-posts-list");
+  if (!container) return;
+  
   container.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">Loading posts...</p>`;
 
   try {
@@ -110,6 +137,7 @@ async function renderAdminPosts() {
     const posts = [];
 
     snap.forEach((docSnap) => {
+      // Exclude the homepage text document from the post list
       if (docSnap.id !== "homepage") {
         posts.push({ id: docSnap.id, ...docSnap.data() });
       }
@@ -129,6 +157,7 @@ async function renderAdminPosts() {
       </div>
     `).join("");
 
+    // Add event listeners to delete buttons
     container.querySelectorAll(".delete-post-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         if (!confirm("Remove this post from the website?")) return;
@@ -137,12 +166,14 @@ async function renderAdminPosts() {
       });
     });
   } catch (err) {
-    container.innerHTML = `<p style="color:#ef4444;">Failed to load posts.</p>`;
+    container.innerHTML = `<p style="color:#ef4444;">Failed to load posts: ${err.message}</p>`;
   }
 }
 
-// 2. Private Site Text & Pricing Editor
+// --- 5. WEBSITE TEXT EDITOR ---
+
 const siteTextForm = document.getElementById("site-text-form");
+
 async function loadSavedTextIntoForm() {
   try {
     const snap = await getDoc(doc(db, "siteContent", "homepage"));
@@ -188,9 +219,12 @@ if (siteTextForm) {
   });
 }
 
-// 3. Bookings Table & CSV Export
+// --- 6. BOOKINGS TABLE & CSV EXPORT ---
+
 async function loadAdminData() {
   const tbody = document.getElementById("admin-table-body");
+  if (!tbody) return;
+
   tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#9ca3af;">Loading bookings...</td></tr>`;
 
   try {
@@ -202,6 +236,7 @@ async function loadAdminData() {
       cachedBookings.push({ id: docSnap.id, ...docSnap.data() });
     });
 
+    // Update stats
     document.getElementById("stat-total").innerText = cachedBookings.length;
     document.getElementById("stat-pending").innerText = cachedBookings.filter(b => b.status === "Pending").length;
     document.getElementById("stat-completed").innerText = cachedBookings.filter(b => b.status === "Completed").length;
@@ -226,6 +261,7 @@ async function loadAdminData() {
       </tr>
     `).join("");
 
+    // Add event listeners for toggle status
     tbody.querySelectorAll(".toggle-status-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         const newStatus = btn.dataset.status === "Pending" ? "Completed" : "Pending";
@@ -234,6 +270,7 @@ async function loadAdminData() {
       });
     });
 
+    // Add event listeners for delete booking
     tbody.querySelectorAll(".delete-booking-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         if (!confirm("Delete this booking permanently?")) return;
@@ -242,14 +279,39 @@ async function loadAdminData() {
       });
     });
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#ef4444;">Failed to load bookings.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#ef4444;">Failed to load bookings: ${err.message}</td></tr>`;
   }
 }
 
-document.getElementById("export-csv-btn").addEventListener("click", () => {
-  if (cachedBookings.length === 0) {
-    alert("No bookings available to export.");
-    return;
-  }
+// Export to CSV Button
+const exportBtn = document.getElementById("export-csv-btn");
+if (exportBtn) {
+  exportBtn.addEventListener("click", () => {
+    if (cachedBookings.length === 0) {
+      alert("No bookings available to export.");
+      return;
+    }
 
-  const headers = ["Name", "Contact", "Service", "Date", "Details", "Status", "Submitted"];
+    const headers = ["Name", "Contact", "Service", "Date", "Details", "Status"];
+    const rows = cachedBookings.map(b => [
+      `"${b.name || ''}"`, 
+      `"${b.contact || ''}"`, 
+      `"${b.service || ''}"`, 
+      `"${b.date || ''}"`, 
+      `"${(b.details || '').replace(/"/g, '""')}"`, 
+      `"${b.status || ''}"`
+    ]);
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n" 
+      + rows.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "musenze_bookings.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+}
