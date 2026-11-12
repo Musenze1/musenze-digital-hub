@@ -50,6 +50,7 @@
           <select id="post-category">
             <option value="Audio & Music">Audio & Music</option>
             <option value="Video & Photo">Video & Photo</option>
+            <option value="Video & Picture Editing">Video & Picture Editing</option>
             <option value="Web & Design">Web & Design</option>
             <option value="Studio News">Studio News</option>
           </select>
@@ -142,6 +143,106 @@
     </div>
   </section>
 
-  <script type="module" src="admin.js"></script>
-</body>
-</html>
+  <!-- Firebase Compat SDKs (100% immune to mobile clipboard link clipping) -->
+  <script src="https://gstatic.com"></script>
+  <script src="https://gstatic.com"></script>
+  <script src="https://gstatic.com"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFyKDyBwcELJ0chSuwkeqNjh1J6ZuuiAs",
+      authDomain: "://firebaseapp.com",
+      projectId: "musenze-digital-hub",
+      storageBucket: "musenze-digital-hub.firebasestorage.app",
+      messagingSenderId: "189794048992",
+      appId: "1:189794048992:web:4b9490abc4ebcac9f52985",
+      measurementId: "G-4BH6S4E33V"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginSection = document.getElementById("login-section");
+    const dashboardSection = document.getElementById("dashboard-section");
+    const logoutBtn = document.getElementById("logout-btn");
+    const loginForm = document.getElementById("admin-login-form");
+    const loginError = document.getElementById("login-error");
+
+    let cachedBookings = [];
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        loginSection.classList.add("hidden");
+        dashboardSection.classList.remove("hidden");
+        logoutBtn.classList.remove("hidden");
+        loadAdminData();
+        renderAdminPosts();
+        loadSavedTextIntoForm();
+      } else {
+        loginSection.classList.remove("hidden");
+        dashboardSection.classList.add("hidden");
+        logoutBtn.classList.add("hidden");
+      }
+    });
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      loginError.innerText = "";
+      const email = document.getElementById("admin-email").value.trim();
+      const password = document.getElementById("admin-password").value;
+      const submitBtn = document.getElementById("login-submit-btn");
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Signing in...";
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        loginForm.reset();
+      } catch (err) {
+        loginError.innerText = "Login error: " + err.message;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Sign In to Dashboard";
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      auth.signOut();
+    });
+
+    // 1. Publish New Post
+    document.getElementById("post-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector("button[type='submit']");
+      btn.disabled = true;
+      btn.innerText = "Publishing...";
+
+      try {
+        await db.collection("siteContent").add({
+          title: document.getElementById("post-title").value,
+          category: document.getElementById("post-category").value,
+          image: document.getElementById("post-image").value,
+          link: document.getElementById("post-link").value,
+          description: document.getElementById("post-desc").value,
+          date: new Date().toLocaleDateString(),
+          timestamp: Date.now()
+        });
+        e.target.reset();
+        await renderAdminPosts();
+        alert("Post published live to the website!");
+      } catch (err) {
+        alert("Error publishing post: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Publish Post to Website";
+      }
+    });
+
+    async function renderAdminPosts() {
+      const container = document.getElementById("admin-posts-list");
+      container.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">Loading posts...</p>`;
+
+      try {
+        const snap = await db.collection("siteContent").orderBy("timestamp", "desc").get();
+        const posts = [];
