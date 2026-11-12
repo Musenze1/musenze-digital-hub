@@ -1,48 +1,40 @@
-const OWNER_PIN = "0811";
-
-// Load saved text edits on startup
 document.addEventListener("DOMContentLoaded", () => {
-  const savedContent = JSON.parse(localStorage.getItem("musenze_content")) || {};
-  Object.keys(savedContent).forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.innerText = savedContent[id];
-  });
+  applySavedSiteText();
+  loadPublishedPosts();
 });
 
-// Quick Edit Button on Hero Section
-const editBtn = document.getElementById("edit-page-btn");
-let isEditing = false;
-
-if (editBtn) {
-  editBtn.addEventListener("click", () => {
-    if (!isEditing) {
-      const pin = prompt("Enter Owner PIN to edit page text:");
-      if (pin !== OWNER_PIN) {
-        if (pin !== null) alert("Incorrect PIN.");
-        return;
-      }
-      isEditing = true;
-      document.body.classList.add("editing-active");
-      document.querySelectorAll(".editable").forEach(el => el.setAttribute("contenteditable", "true"));
-      editBtn.innerText = "Save Text Edits";
-      editBtn.classList.replace("btn-outline", "btn-primary");
-    } else {
-      const contentToSave = {};
-      document.querySelectorAll(".editable").forEach(el => {
-        contentToSave[el.id] = el.innerText;
-        el.setAttribute("contenteditable", "false");
-      });
-      localStorage.setItem("musenze_content", JSON.stringify(contentToSave));
-      isEditing = false;
-      document.body.classList.remove("editing-active");
-      editBtn.innerText = "Quick Edit Text";
-      editBtn.classList.replace("btn-primary", "btn-outline");
-      alert("Changes saved!");
+// Apply Text Updates Saved from Admin Portal
+function applySavedSiteText() {
+  const savedText = JSON.parse(localStorage.getItem("musenze_site_text")) || {};
+  Object.keys(savedText).forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && savedText[id].trim() !== "") {
+      el.innerText = savedText[id];
     }
   });
 }
 
-// Handle Booking Form Submission
+// Load Published Studio Posts onto Homepage
+function loadPublishedPosts() {
+  const postsGrid = document.getElementById("public-posts-grid");
+  const savedPosts = JSON.parse(localStorage.getItem("musenze_posts")) || [];
+
+  if (postsGrid && savedPosts.length > 0) {
+    const dynamicCards = savedPosts.map(post => `
+      <div class="card featured">
+        ${post.image ? `<img src="${post.image}" alt="${post.title}" style="width:100%; border-radius:6px; margin-bottom:0.8rem; max-height:200px; object-fit:cover;">` : ""}
+        <small style="color:#9ca3af;">${post.category} • ${post.date}</small>
+        <h3 style="margin-top:0.3rem;">${post.title}</h3>
+        <p>${post.description}</p>
+        ${post.link ? `<a href="${post.link}" target="_blank" rel="noopener" class="btn-outline" style="margin-top:0.8rem; display:inline-block;">View Project</a>` : ""}
+      </div>
+    `).join("");
+
+    postsGrid.innerHTML = dynamicCards + postsGrid.innerHTML;
+  }
+}
+
+// Handle Client Booking Form Submission
 const bookingForm = document.getElementById("booking-form");
 if (bookingForm) {
   bookingForm.addEventListener("submit", (e) => {
@@ -59,13 +51,9 @@ if (bookingForm) {
       createdAt: new Date().toLocaleDateString()
     };
 
-    // Save to Local Storage Backup
     const bookings = JSON.parse(localStorage.getItem("musenze_bookings")) || [];
     bookings.unshift(newBooking);
     localStorage.setItem("musenze_bookings", JSON.stringify(bookings));
-
-    // Optional: Add EmailJS send logic here when ready
-    // emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", newBooking);
 
     document.getElementById("form-status").innerText =
       "Booking received! Musenze Digital Hub & Studio will contact you shortly.";
