@@ -12,19 +12,26 @@
     <div class="logo">MUSENZE ADMIN PORTAL</div>
     <nav>
       <a href="index.html" class="btn-outline">Back to Website</a>
+      <button id="logout-btn" class="btn-danger hidden">Logout</button>
     </nav>
   </header>
 
-  <!-- PIN Login Box -->
+  <!-- Firebase Email/Password Login Box -->
   <section id="login-section" class="container">
-    <div class="form-box" style="text-align:center;">
-      <h2>Owner Authentication</h2>
-      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Enter your Admin PIN to post jobs, edit website text, and view bookings.</p>
-      <div class="form-group">
-        <input type="password" id="admin-pin-input" placeholder="Enter PIN" style="text-align:center;">
+    <form id="admin-login-form" class="form-box" style="text-align:center;">
+      <h2>Studio Admin Login</h2>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Sign in with your authorized studio admin email and password.</p>
+      <div class="form-group" style="text-align:left;">
+        <label for="admin-email">Admin Email</label>
+        <input type="email" id="admin-email" required placeholder="Enter admin email">
       </div>
-      <button id="unlock-btn" class="btn-primary" style="width:100%;">Unlock Dashboard</button>
-    </div>
+      <div class="form-group" style="text-align:left;">
+        <label for="admin-password">Password</label>
+        <input type="password" id="admin-password" required placeholder="Enter password">
+      </div>
+      <button type="submit" id="login-submit-btn" class="btn-primary" style="width:100%;">Sign In to Dashboard</button>
+      <p id="login-error" class="status-msg" style="color:var(--danger);"></p>
+    </form>
   </section>
 
   <!-- Main Admin Dashboard -->
@@ -135,6 +142,6 @@
     </div>
   </section>
 
-  <script src="admin.js"></script>
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
