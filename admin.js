@@ -4,7 +4,7 @@ import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateD
 
 const firebaseConfig = {
   apiKey: "AIzaSyCFyKDyBwcELJ0chSuwkeqNjh1J6ZuuiAs",
-  authDomain: "://firebaseapp.com",
+  authDomain: "musenze-digital-hub.firebaseapp.com",
   projectId: "musenze-digital-hub",
   storageBucket: "musenze-digital-hub.firebasestorage.app",
   messagingSenderId: "189794048992",
@@ -55,7 +55,7 @@ loginForm.addEventListener("submit", async (e) => {
     await signInWithEmailAndPassword(auth, email, password);
     loginForm.reset();
   } catch (err) {
-    loginError.innerText = "Invalid email or password. Please check and try again.";
+    loginError.innerText = "Login failed: " + err.message;
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerText = "Sign In to Dashboard";
@@ -252,3 +252,4 @@ document.getElementById("export-csv-btn").addEventListener("click", () => {
     return;
   }
 
+  const headers = ["Name", "Contact", "Service", "Date", "Details", "Status", "Submitted"];
