@@ -19,9 +19,9 @@
   <section id="login-section" class="container">
     <div class="form-box" style="text-align:center;">
       <h2>Owner Authentication</h2>
-      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Enter your Admin PIN to manage studio bookings.</p>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Enter your Admin PIN to post jobs, edit website text, and view bookings.</p>
       <div class="form-group">
-        <input type="password" id="admin-pin-input" placeholder="Enter PIN (Default: 1234)" style="text-align:center;">
+        <input type="password" id="admin-pin-input" placeholder="Enter PIN" style="text-align:center;">
       </div>
       <button id="unlock-btn" class="btn-primary" style="width:100%;">Unlock Dashboard</button>
     </div>
@@ -29,12 +29,79 @@
 
   <!-- Main Admin Dashboard -->
   <section id="dashboard-section" class="container hidden">
+
+    <!-- 1. Publish New Studio Job / Post -->
+    <div class="form-box" style="margin-bottom:3rem;">
+      <h2 style="margin-bottom:1rem;">1. Post New Work / Studio Update</h2>
+      <form id="post-form">
+        <div class="form-group">
+          <label for="post-title">Job / Project Title</label>
+          <input type="text" id="post-title" required placeholder="e.g. New Afrobeat Single Recorded & Mastered">
+        </div>
+        <div class="form-group">
+          <label for="post-category">Category</label>
+          <select id="post-category">
+            <option value="Audio & Music">Audio & Music</option>
+            <option value="Video & Photo">Video & Photo</option>
+            <option value="Web & Design">Web & Design</option>
+            <option value="Studio News">Studio News</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="post-image">Image Link (Optional)</label>
+          <input type="url" id="post-image" placeholder="Paste image URL (https://...)">
+        </div>
+        <div class="form-group">
+          <label for="post-link">YouTube / Audio / Project Link (Optional)</label>
+          <input type="url" id="post-link" placeholder="Paste link to watch or listen (https://...)">
+        </div>
+        <div class="form-group">
+          <label for="post-desc">Job Description</label>
+          <textarea id="post-desc" rows="3" required placeholder="Describe what you did for this client..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Publish Post to Website</button>
+      </form>
+      <div id="admin-posts-list" style="margin-top:1.5rem;"></div>
+    </div>
+
+    <!-- 2. Private Site Text & Pricing Editor -->
+    <div class="form-box" style="margin-bottom:3rem;">
+      <h2 style="margin-bottom:1rem;">2. Edit Website Headlines & Prices</h2>
+      <form id="site-text-form">
+        <div class="form-group">
+          <label for="edit-hero-title">Main Hero Headline</label>
+          <input type="text" id="edit-hero-title" value="Creative Production & Digital Innovation">
+        </div>
+        <div class="form-group">
+          <label for="edit-hero-subtitle">Hero Subheadline</label>
+          <textarea id="edit-hero-subtitle" rows="2">Professional audio recording, 4K video production, branding, and custom web development built to elevate your brand.</textarea>
+        </div>
+        <div class="form-group">
+          <label for="edit-pkg1-price">Starter Session Price</label>
+          <input type="text" id="edit-pkg1-price" value="Custom Quote">
+        </div>
+        <div class="form-group">
+          <label for="edit-pkg2-price">Pro Creator Bundle Price</label>
+          <input type="text" id="edit-pkg2-price" value="Most Popular">
+        </div>
+        <div class="form-group">
+          <label for="edit-pkg3-price">Business Digital Launch Price</label>
+          <input type="text" id="edit-pkg3-price" value="Enterprise">
+        </div>
+        <div class="form-group">
+          <label for="edit-footer-contact">Footer Contact Line</label>
+          <input type="text" id="edit-footer-contact" value="Call / WhatsApp: +234 904 033 2445">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Save Website Text Changes</button>
+      </form>
+    </div>
+
+    <!-- 3. Bookings Management -->
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
-      <h2>Bookings Management</h2>
+      <h2>3. Bookings Management</h2>
       <button id="export-csv-btn" class="btn-primary">Export CSV Spreadsheet</button>
     </div>
 
-    <!-- Summary Statistics -->
     <div class="stats-grid">
       <div class="stat-card">
         <h3 id="stat-total">0</h3>
@@ -50,7 +117,6 @@
       </div>
     </div>
 
-    <!-- Responsive Bookings Table -->
     <div class="table-wrapper">
       <table>
         <thead>
@@ -64,9 +130,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="admin-table-body">
-          <!-- Rows populated by admin.js -->
-        </tbody>
+        <tbody id="admin-table-body"></tbody>
       </table>
     </div>
   </section>
