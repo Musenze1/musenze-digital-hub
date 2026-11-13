@@ -1,11 +1,12 @@
+// --- 1. FIREBASE IMPORTS (Correct Official Links) ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// --- 1. FIREBASE CONFIGURATION ---
+// --- 2. FIREBASE CONFIGURATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyCFyKDyBwcELJ0chSuwkeqNjh1J6ZuuiAs",
-  authDomain: "musenze-digital-hub.firebaseapp.com", // FIXED: Added the correct domain
+  authDomain: "musenze-digital-hub.firebaseapp.com", 
   projectId: "musenze-digital-hub",
   storageBucket: "musenze-digital-hub.firebasestorage.app",
   messagingSenderId: "189794048992",
@@ -13,11 +14,12 @@ const firebaseConfig = {
   measurementId: "G-4BH6S4E33V"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- 2. DOM ELEMENTS ---
+// --- 3. DOM ELEMENTS ---
 const loginSection = document.getElementById("login-section");
 const dashboardSection = document.getElementById("dashboard-section");
 const logoutBtn = document.getElementById("logout-btn");
@@ -27,9 +29,9 @@ const submitBtn = document.getElementById("login-submit-btn");
 
 let cachedBookings = [];
 
-// --- 3. AUTHENTICATION (LOGIN/LOGOUT) ---
+// --- 4. AUTHENTICATION (LOGIN/LOGOUT) ---
 
-// Monitor Login State
+// Monitor Login State (Switches between Login screen and Dashboard)
 onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is logged in
@@ -65,13 +67,13 @@ if (loginForm) {
       await signInWithEmailAndPassword(auth, email, password);
       loginForm.reset(); // Clear form on success
     } catch (err) {
-      // Give specific error messages based on Firebase errors
-      if (err.code === "auth/user-not-found") {
-        loginError.innerText = "Error: No admin account found with this email.";
+      // Friendly error messages based on Firebase error codes
+      if (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
+        loginError.innerText = "Error: Invalid email or password.";
       } else if (err.code === "auth/wrong-password") {
         loginError.innerText = "Error: Incorrect password. Please try again.";
-      } else if (err.code === "auth/invalid-credential") {
-        loginError.innerText = "Error: Invalid email or password.";
+      } else if (err.code === "auth/too-many-requests") {
+        loginError.innerText = "Error: Too many failed attempts. Please wait and try again.";
       } else {
         loginError.innerText = "Login failed: " + err.message;
       }
@@ -89,9 +91,9 @@ if (logoutBtn) {
   });
 }
 
-// --- 4. ADMIN DASHBOARD FUNCTIONS ---
+// --- 5. ADMIN DASHBOARD FUNCTIONS ---
 
-// Publish New Post to Firestore
+// 1. Publish New Post to Firestore
 const postForm = document.getElementById("post-form");
 if (postForm) {
   postForm.addEventListener("submit", async (e) => {
@@ -124,7 +126,7 @@ if (postForm) {
   });
 }
 
-// Render Admin Posts list
+// 2. Render Admin Posts list
 async function renderAdminPosts() {
   const container = document.getElementById("admin-posts-list");
   if (!container) return;
@@ -170,8 +172,7 @@ async function renderAdminPosts() {
   }
 }
 
-// --- 5. WEBSITE TEXT EDITOR ---
-
+// 3. Website Text Editor
 const siteTextForm = document.getElementById("site-text-form");
 
 async function loadSavedTextIntoForm() {
@@ -219,8 +220,7 @@ if (siteTextForm) {
   });
 }
 
-// --- 6. BOOKINGS TABLE & CSV EXPORT ---
-
+// 4. Bookings Table & CSV Export
 async function loadAdminData() {
   const tbody = document.getElementById("admin-table-body");
   if (!tbody) return;
@@ -283,7 +283,7 @@ async function loadAdminData() {
   }
 }
 
-// Export to CSV Button
+// 5. Export to CSV Button
 const exportBtn = document.getElementById("export-csv-btn");
 if (exportBtn) {
   exportBtn.addEventListener("click", () => {
@@ -314,4 +314,4 @@ if (exportBtn) {
     link.click();
     document.body.removeChild(link);
   });
-}
+      }
