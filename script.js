@@ -1,9 +1,11 @@
-import { initializeApp } from "https://gstatic.com";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, query, orderBy } from "https://gstatic.com";
+// --- 1. FIREBASE IMPORTS (Correct Official Links) ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+// --- 2. FIREBASE CONFIGURATION (Fixed authDomain) ---
 const firebaseConfig = {
   apiKey: "AIzaSyCFyKDyBwcELJ0chSuwkeqNjh1J6ZuuiAs",
-  authDomain: "://firebaseapp.com",
+  authDomain: "musenze-digital-hub.firebaseapp.com", // FIXED
   projectId: "musenze-digital-hub",
   storageBucket: "musenze-digital-hub.firebasestorage.app",
   messagingSenderId: "189794048992",
@@ -14,12 +16,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// --- 3. INITIALIZE PAGE ---
 document.addEventListener("DOMContentLoaded", () => {
   applySavedSiteText();
   loadPublishedPosts();
+  loadBookingHistory(); // NEW: Loads the history on the public site
 });
 
-// Load Headline & Price Updates from Firestore
+// --- 4. WEBSITE TEXT & PRICES ---
 async function applySavedSiteText() {
   try {
     const snap = await getDoc(doc(db, "siteContent", "homepage"));
@@ -37,7 +41,7 @@ async function applySavedSiteText() {
   }
 }
 
-// Load Published Studio Posts from Firestore
+// --- 5. PUBLIC POSTS ---
 async function loadPublishedPosts() {
   const postsGrid = document.getElementById("public-posts-grid");
   if (!postsGrid) return;
@@ -70,7 +74,7 @@ async function loadPublishedPosts() {
   }
 }
 
-// Save Client Booking Form to Firestore
+// --- 6. SAVE NEW BOOKING ---
 const bookingForm = document.getElementById("booking-form");
 if (bookingForm) {
   bookingForm.addEventListener("submit", async (e) => {
@@ -81,6 +85,7 @@ if (bookingForm) {
     submitBtn.disabled = true;
     submitBtn.innerText = "Sending Booking...";
 
+    // This data goes to the cloud (Firestore)
     const newBooking = {
       name: document.getElementById("client-name").value,
       contact: document.getElementById("client-contact").value,
@@ -93,10 +98,14 @@ if (bookingForm) {
     };
 
     try {
+      // Saves to the exact "bookings" collection your Admin panel reads from
       await addDoc(collection(db, "bookings"), newBooking);
       statusMsg.style.color = "#10b981";
       statusMsg.innerText = "Booking received! Musenze Digital Hub & Studio will contact you shortly.";
       bookingForm.reset();
+      
+      // Reload the history immediately after booking
+      loadBookingHistory(); 
     } catch (err) {
       console.error("Booking error:", err);
       statusMsg.style.color = "#ef4444";
@@ -106,4 +115,47 @@ if (bookingForm) {
       submitBtn.innerText = "Submit Booking Request";
     }
   });
+}
+
+// --- 7. PUBLIC BOOKING HISTORY ---
+// This function looks for a container with id="public-booking-history" on your index.html
+async function loadBookingHistory() {
+  const historyContainer = document.getElementById("public-booking-history");
+  if (!historyContainer) return; // If the container doesn't exist, stop.
+
+  try {
+    // Get all bookings, newest first
+    const q = query(collection(db, "bookings"), orderBy("timestamp", "desc"));
+    const snap = await getDocs(q);
+    
+    // Filter to only show "Completed" bookings publicly
+    const completedBookings = [];
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data.status === "Completed") {
+        completedBookings.push(data);
+      }
+    });
+
+    if (completedBookings.length === 0) {
+      historyContainer.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">No completed bookings yet. Your completed work will appear here!</p>`;
+      return;
+    }
+
+    historyContainer.innerHTML = completedBookings.map(b => `
+      <div class="card" style="margin-bottom: 1rem; border-left: 4px solid #10b981;">
+        <h4 style="margin-bottom: 0.3rem;">${b.service}</h4>
+        <p style="font-size: 0.9rem; color: #d1d5db;">
+          <strong>Client:</strong> ${b.name}<br>
+          <strong>Date:</strong> ${b.date}<br>
+          <strong>Details:</strong> ${b.details}
+        </p>
+        <span style="color: #10b981; font-weight: bold; font-size: 0.8rem;">✔ Completed</span>
+      </div>
+    `).join("");
+    
+  } catch (err) {
+    console.error("Error loading booking history:", err);
+    historyContainer.innerHTML = `<p style="color:#ef4444;">Failed to load booking history.</p>`;
+  }
 }
