@@ -1,11 +1,9 @@
-// --- 1. FIREBASE IMPORTS (Correct Official Links) ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// --- 2. FIREBASE CONFIGURATION (Fixed authDomain) ---
 const firebaseConfig = {
   apiKey: "AIzaSyCFyKDyBwcELJ0chSuwkeqNjh1J6ZuuiAs",
-  authDomain: "musenze-digital-hub.firebaseapp.com", // FIXED
+  authDomain: "musenze-digital-hub.firebaseapp.com",
   projectId: "musenze-digital-hub",
   storageBucket: "musenze-digital-hub.firebasestorage.app",
   messagingSenderId: "189794048992",
@@ -16,14 +14,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 3. INITIALIZE PAGE ---
 document.addEventListener("DOMContentLoaded", () => {
   applySavedSiteText();
   loadPublishedPosts();
-  loadBookingHistory(); // NEW: Loads the history on the public site
+  loadBookingHistory(); // Loads history and the counter
 });
 
-// --- 4. WEBSITE TEXT & PRICES ---
+// Load Headline & Price Updates
 async function applySavedSiteText() {
   try {
     const snap = await getDoc(doc(db, "siteContent", "homepage"));
@@ -41,7 +38,7 @@ async function applySavedSiteText() {
   }
 }
 
-// --- 5. PUBLIC POSTS ---
+// Load Published Studio Posts
 async function loadPublishedPosts() {
   const postsGrid = document.getElementById("public-posts-grid");
   if (!postsGrid) return;
@@ -74,7 +71,7 @@ async function loadPublishedPosts() {
   }
 }
 
-// --- 6. SAVE NEW BOOKING ---
+// Save Client Booking Form
 const bookingForm = document.getElementById("booking-form");
 if (bookingForm) {
   bookingForm.addEventListener("submit", async (e) => {
@@ -85,7 +82,6 @@ if (bookingForm) {
     submitBtn.disabled = true;
     submitBtn.innerText = "Sending Booking...";
 
-    // This data goes to the cloud (Firestore)
     const newBooking = {
       name: document.getElementById("client-name").value,
       contact: document.getElementById("client-contact").value,
@@ -98,18 +94,14 @@ if (bookingForm) {
     };
 
     try {
-      // Saves to the exact "bookings" collection your Admin panel reads from
       await addDoc(collection(db, "bookings"), newBooking);
       statusMsg.style.color = "#10b981";
       statusMsg.innerText = "Booking received! Musenze Digital Hub & Studio will contact you shortly.";
       bookingForm.reset();
-      
-      // Reload the history immediately after booking
-      loadBookingHistory(); 
     } catch (err) {
       console.error("Booking error:", err);
       statusMsg.style.color = "#ef4444";
-      statusMsg.innerText = "Could not send booking right now. Please tap the WhatsApp button to message us directly.";
+      statusMsg.innerText = "Could not send booking right now. Please tap the WhatsApp button.";
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerText = "Submit Booking Request";
@@ -117,26 +109,34 @@ if (bookingForm) {
   });
 }
 
-// --- 7. PUBLIC BOOKING HISTORY ---
-// This function looks for a container with id="public-booking-history" on your index.html
+// Load Public Booking History & Counter
 async function loadBookingHistory() {
   const historyContainer = document.getElementById("public-booking-history");
-  if (!historyContainer) return; // If the container doesn't exist, stop.
+  const counterContainer = document.getElementById("completed-counter"); 
+  
+  if (!historyContainer) return;
 
   try {
-    // Get all bookings, newest first
-    const q = query(collection(db, "bookings"), orderBy("timestamp", "desc"));
-    const snap = await getDocs(q);
+    // ONLY fetch bookings where status is exactly "Completed"
+    const q = query(
+      collection(db, "bookings"), 
+      where("status", "==", "Completed"),
+      orderBy("timestamp", "desc")
+    );
     
-    // Filter to only show "Completed" bookings publicly
+    const snap = await getDocs(q);
     const completedBookings = [];
+
     snap.forEach((docSnap) => {
-      const data = docSnap.data();
-      if (data.status === "Completed") {
-        completedBookings.push(data);
-      }
+      completedBookings.push(docSnap.data());
     });
 
+    // 1. Update the Counter Number
+    if (counterContainer) {
+      counterContainer.innerText = completedBookings.length; 
+    }
+
+    // 2. Show the History List
     if (completedBookings.length === 0) {
       historyContainer.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">No completed bookings yet. Your completed work will appear here!</p>`;
       return;
@@ -158,4 +158,4 @@ async function loadBookingHistory() {
     console.error("Error loading booking history:", err);
     historyContainer.innerHTML = `<p style="color:#ef4444;">Failed to load booking history.</p>`;
   }
-}
+    }
