@@ -17,7 +17,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   applySavedSiteText();
   loadPublishedPosts();
-  loadBookingHistory(); // Loads history and the counter
+  loadGlobalCounter(); 
 });
 
 // Load Headline & Price Updates
@@ -109,53 +109,24 @@ if (bookingForm) {
   });
 }
 
-// Load Public Booking History & Counter
-async function loadBookingHistory() {
-  const historyContainer = document.getElementById("public-booking-history");
+// NEW: Load Only The Global Counter
+async function loadGlobalCounter() {
   const counterContainer = document.getElementById("completed-counter"); 
-  
-  if (!historyContainer) return;
+  if (!counterContainer) return;
 
   try {
-    // ONLY fetch bookings where status is exactly "Completed"
+    // Fetch ONLY completed bookings
     const q = query(
       collection(db, "bookings"), 
-      where("status", "==", "Completed"),
-      orderBy("timestamp", "desc")
+      where("status", "==", "Completed")
     );
     
     const snap = await getDocs(q);
-    const completedBookings = [];
-
-    snap.forEach((docSnap) => {
-      completedBookings.push(docSnap.data());
-    });
-
-    // 1. Update the Counter Number
-    if (counterContainer) {
-      counterContainer.innerText = completedBookings.length; 
-    }
-
-    // 2. Show the History List
-    if (completedBookings.length === 0) {
-      historyContainer.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">No completed bookings yet. Your completed work will appear here!</p>`;
-      return;
-    }
-
-    historyContainer.innerHTML = completedBookings.map(b => `
-      <div class="card" style="margin-bottom: 1rem; border-left: 4px solid #10b981;">
-        <h4 style="margin-bottom: 0.3rem;">${b.service}</h4>
-        <p style="font-size: 0.9rem; color: #d1d5db;">
-          <strong>Client:</strong> ${b.name}<br>
-          <strong>Date:</strong> ${b.date}<br>
-          <strong>Details:</strong> ${b.details}
-        </p>
-        <span style="color: #10b981; font-weight: bold; font-size: 0.8rem;">✔ Completed</span>
-      </div>
-    `).join("");
+    
+    // Update the big number on the screen
+    counterContainer.innerText = snap.size; 
     
   } catch (err) {
-    console.error("Error loading booking history:", err);
-    historyContainer.innerHTML = `<p style="color:#ef4444;">Failed to load booking history.</p>`;
+    console.error("Error loading counter:", err);
   }
-    }
+}
