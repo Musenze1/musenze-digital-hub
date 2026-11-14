@@ -113,14 +113,15 @@
     </div>
   </section>
 
-  <!-- NEW SECTION: Public Booking History (Shows Completed Jobs) -->
-  <section id="completed-history" class="container">
-    <h2>Completed Projects & Client History</h2>
-    <p style="color:var(--text-muted); margin-bottom: 1.5rem;">See some of the recent projects we have successfully completed for our clients.</p>
-    <div id="public-booking-history" class="grid">
-      <!-- The script.js file will automatically load the completed bookings here -->
-      <p style="color:#9ca3af; font-size:0.9rem;">Loading history...</p>
+  <!-- NEW GLOBAL IMPACT COUNTER SECTION -->
+  <section id="completed-history" class="container" style="text-align: center; padding: 4rem 1rem; background-color: rgba(245, 158, 11, 0.05); border-radius: 12px; margin-top: 3rem; margin-bottom: 3rem;">
+    <h2 style="margin-bottom: 2rem;">Our Global Impact</h2>
+    <div style="margin: 2rem 0;">
+      <h1 style="color: #f59e0b; font-size: 6rem; margin: 0; line-height: 1; font-weight: bold;" id="completed-counter">0</h1>
+      <p style="color: #d1d5db; font-size: 1.2rem; margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;">Projects Delivered Globally</p>
     </div>
+    <!-- This is hidden so no client info ever shows -->
+    <div id="public-booking-history" style="display: none;"></div>
   </section>
 
   <!-- Client Booking Form -->
@@ -170,6 +171,7 @@
     <p>&copy; 2026 Musenze Digital Hub & Studio. All rights reserved.</p>
   </footer>
 
+  <!-- Load the public script -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
