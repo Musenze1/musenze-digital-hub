@@ -9,7 +9,8 @@
   
   <!-- This adds your logo to the browser tab -->
   <link rel="icon" type="image/png" href="939-removebg-preview.png">
-  <link rel="stylesheet" href="style.css">
+  <!-- Cache buster updated to v=8 -->
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -17,7 +18,7 @@
   <header class="navbar">
     <!-- LOGO AND TEXT COMBINED -->
     <div class="logo" id="site-brand" style="display: flex; align-items: center; gap: 10px;">
-      <img src="939-removebg-preview.png" alt="Musenze Digital Hub Logo" style="height: 45px; width: auto;">
+      <img src="939-removebg-preview.png" alt="Musenze Digital Hub Logo" style="height: 60px; width: auto;">
       <span style="font-size: 1rem; letter-spacing: 1px; line-height: 1.2;">MUSENZE DIGITAL HUB & STUDIO</span>
     </div>
     
@@ -34,6 +35,7 @@
     <h1 id="site-hero-title">Creative Production & Digital Innovation</h1>
     <p id="site-hero-subtitle">Professional audio recording, 4K video production, branding, and custom web development built to elevate your brand.</p>
     <div class="hero-btns">
+      <!-- Book a Session uses the Primary (Wine) button class -->
       <a href="#booking" class="btn-primary">Book a Session</a>
       <a href="whatsapp://send?phone=2349040332445&text=Hello%20Musenze%20Digital%20Hub%20%26%20Studio,%20I%20would%20like%20to%20make%20a%20booking." class="btn-outline">WhatsApp Us</a>
     </div>
@@ -66,18 +68,23 @@
         <h3 id="site-pkg1-title">Starter Session</h3>
         <p class="price" id="site-pkg1-price">Custom Quote</p>
         <p id="site-pkg1-desc">2-hour audio recording or studio photoshoot with basic editing and digital delivery.</p>
+        <!-- Outline Button (Gold) -->
         <a href="#booking" class="btn-outline" style="margin-top:1rem; display:inline-block;">Select Starter</a>
       </div>
+      
       <div class="card featured">
         <h3 id="site-pkg2-title">Pro Creator Bundle</h3>
         <p class="price" id="site-pkg2-price">Most Popular</p>
         <p id="site-pkg2-desc">Full song mix & master + promotional music video shoot + cover art design.</p>
-        <a href="#booking" class="btn-primary" style="margin-top:1rem; display:inline-block;">Select Pro</a>
+        <!-- THIS IS THE UPDATED BUTTON: Now uses Primary class and inline Wine styles -->
+        <a href="#booking" class="btn-primary" style="margin-top:1rem; display:inline-block; background: #A31D3B; color: #ffffff;">Select Pro</a>
       </div>
+      
       <div class="card">
         <h3 id="site-pkg3-title">Business Digital Launch</h3>
         <p class="price" id="site-pkg3-price">Enterprise</p>
         <p id="site-pkg3-desc">Complete business website, brand identity kit, and commercial promo video.</p>
+        <!-- Outline Button (Gold) -->
         <a href="#booking" class="btn-outline" style="margin-top:1rem; display:inline-block;">Select Business</a>
       </div>
     </div>
