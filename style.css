@@ -1,8 +1,9 @@
 :root {
   --bg-dark: #0f1115;
   --bg-card: #181b22;
-  --accent: #f59e0b;
+  --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
+  --brand-red: #ef4444; /* Red from your logo */
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
   --border: #2d323e;
@@ -41,6 +42,14 @@ body {
   font-weight: 800;
   letter-spacing: 1px;
   color: var(--accent);
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  max-height: 60px;
+  width: auto;
+  display: block;
 }
 
 .navbar nav {
@@ -54,6 +63,11 @@ body {
   color: var(--text-main);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar nav a:hover {
+  color: var(--brand-red); /* Hover turns red to match logo */
 }
 
 .hero {
@@ -107,11 +121,12 @@ h2 {
 }
 
 .card.featured {
-  border-color: var(--accent);
+  border-color: var(--brand-red); /* Highlighted package gets the red border */
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
 }
 
 .card h3 {
-  color: var(--accent);
+  color: var(--brand-red); /* Service titles are now the red from your logo */
   margin-bottom: 0.6rem;
 }
 
@@ -164,6 +179,11 @@ input, select, textarea {
   font-size: 1rem;
 }
 
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--brand-red); /* Form inputs glow red when clicked */
+}
+
 .btn-primary {
   background: var(--accent);
   color: #000;
@@ -173,6 +193,7 @@ input, select, textarea {
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
+  transition: background 0.2s ease;
 }
 
 .btn-primary:hover {
@@ -187,6 +208,12 @@ input, select, textarea {
   border-radius: 6px;
   cursor: pointer;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: #000;
 }
 
 .btn-danger {
@@ -196,6 +223,12 @@ input, select, textarea {
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: #fff;
 }
 
 .status-msg {
