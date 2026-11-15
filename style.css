@@ -3,7 +3,7 @@
   --bg-card: #181b22;
   --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
-  --brand-wine: #E53935; /* Bright Crimson Wine - Matches logo but readable */
+  --brand-wine: #E53935; /* Kept for borders */
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
   --border: #2d323e;
@@ -67,7 +67,7 @@ body {
 }
 
 .navbar nav a:hover {
-  color: var(--brand-wine); 
+  color: var(--accent); /* Hover is now Gold */
 }
 
 .hero {
@@ -120,13 +120,15 @@ h2 {
   border: 1px solid var(--border);
 }
 
+/* Pro Creator Bundle Border remains Wine */
 .card.featured {
   border-color: var(--brand-wine); 
   box-shadow: 0 0 15px rgba(229, 57, 53, 0.15); 
 }
 
+/* Text is now GOLD to match buttons */
 .card h3 {
-  color: var(--brand-wine); 
+  color: var(--accent); 
   margin-bottom: 0.6rem;
   font-weight: 700;
 }
@@ -182,7 +184,7 @@ input, select, textarea {
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--brand-wine); 
+  border-color: var(--accent); /* Form focus is Gold */
 }
 
 .btn-primary {
