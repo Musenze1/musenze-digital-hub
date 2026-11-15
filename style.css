@@ -3,7 +3,8 @@
   --bg-card: #181b22;
   --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
-  --brand-wine: #E53935; /* Kept for borders */
+  --brand-wine: #A31D3B; /* Deep Wine for primary buttons */
+  --brand-wine-hover: #80162E;
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
   --border: #2d323e;
@@ -67,7 +68,7 @@ body {
 }
 
 .navbar nav a:hover {
-  color: var(--accent); /* Hover is now Gold */
+  color: var(--brand-wine); 
 }
 
 .hero {
@@ -120,13 +121,12 @@ h2 {
   border: 1px solid var(--border);
 }
 
-/* Pro Creator Bundle Border remains Wine */
 .card.featured {
   border-color: var(--brand-wine); 
-  box-shadow: 0 0 15px rgba(229, 57, 53, 0.15); 
+  box-shadow: 0 0 15px rgba(163, 29, 59, 0.15); 
 }
 
-/* Text is now GOLD to match buttons */
+/* Text remains GOLD */
 .card h3 {
   color: var(--accent); 
   margin-bottom: 0.6rem;
@@ -184,12 +184,15 @@ input, select, textarea {
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--accent); /* Form focus is Gold */
+  border-color: var(--accent); 
 }
 
+/* --- BUTTONS --- */
+
+/* 1. Primary Button is now WINE (Book a Session & Select Pro) */
 .btn-primary {
-  background: var(--accent);
-  color: #000;
+  background: var(--brand-wine);
+  color: #ffffff; /* White text for better contrast on wine */
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
@@ -200,9 +203,10 @@ input:focus, select:focus, textarea:focus {
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
+  background: var(--brand-wine-hover);
 }
 
+/* 2. Outline Button remains GOLD (WhatsApp Us & Select Starter/Business) */
 .btn-outline {
   background: transparent;
   color: var(--accent);
