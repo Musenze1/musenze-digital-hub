@@ -3,7 +3,7 @@
   --bg-card: #181b22;
   --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
-  --brand-wine: #800020; /* DEEP WINE/BURGUNDY MATCHING YOUR LOGO */
+  --brand-wine: #A31D3B; /* Rich Wine/Burgundy matching your logo circle */
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
   --border: #2d323e;
@@ -122,7 +122,7 @@ h2 {
 
 .card.featured {
   border-color: var(--brand-wine); 
-  box-shadow: 0 0 15px rgba(128, 0, 32, 0.2); /* Wine glow */
+  box-shadow: 0 0 15px rgba(163, 29, 59, 0.2); 
 }
 
 .card h3 {
@@ -235,11 +235,6 @@ input:focus, select:focus, textarea:focus {
   margin-top: 1rem;
   color: var(--success);
   font-weight: 600;
-}
-
-.editing-active .editable {
-  outline: 2px dashed var(--accent);
-  padding: 4px;
 }
 
 /* Floating WhatsApp Icon Button */
