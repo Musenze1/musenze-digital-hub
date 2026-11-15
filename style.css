@@ -3,7 +3,7 @@
   --bg-card: #181b22;
   --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
-  --brand-red: #ef4444; /* Red from your logo */
+  --brand-wine: #800020; /* DEEP WINE/BURGUNDY MATCHING YOUR LOGO */
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
   --border: #2d323e;
@@ -67,7 +67,7 @@ body {
 }
 
 .navbar nav a:hover {
-  color: var(--brand-red); /* Hover turns red to match logo */
+  color: var(--brand-wine); 
 }
 
 .hero {
@@ -121,12 +121,12 @@ h2 {
 }
 
 .card.featured {
-  border-color: var(--brand-red); /* Highlighted package gets the red border */
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+  border-color: var(--brand-wine); 
+  box-shadow: 0 0 15px rgba(128, 0, 32, 0.2); /* Wine glow */
 }
 
 .card h3 {
-  color: var(--brand-red); /* Service titles are now the red from your logo */
+  color: var(--brand-wine); 
   margin-bottom: 0.6rem;
 }
 
@@ -181,7 +181,7 @@ input, select, textarea {
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--brand-red); /* Form inputs glow red when clicked */
+  border-color: var(--brand-wine); 
 }
 
 .btn-primary {
