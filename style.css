@@ -1,9 +1,9 @@
 :root {
   --bg-dark: #0f1115;
   --bg-card: #181b22;
-  --accent: #f59e0b;
+  --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
-  --brand-wine: #A31D3B;
+  --brand-wine: #A31D3B; /* Deep Wine for primary buttons */
   --brand-wine-hover: #80162E;
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
@@ -37,7 +37,7 @@ body {
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem 5%; /* Slightly reduced padding */
+  padding: 1.2rem 5%;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -55,24 +55,25 @@ body {
 }
 
 .logo img {
-  height: 60px;
+  max-height: 60px;
   width: auto;
   display: block;
 }
 
-/* --- THE MOBILE TEXT FIX --- */
+/* --- THIS IS THE FIX FOR THE TEXT WRAPPING --- */
 .logo span {
   font-size: 1.1rem;
   letter-spacing: 1px;
   line-height: 1.2;
+  white-space: nowrap; /* Forces text to stay on one line */
 }
 
 @media (max-width: 600px) {
   .logo img {
-    height: 45px; /* Smaller logo on mobile */
+    height: 45px; /* Makes logo slightly smaller on mobile */
   }
   .logo span {
-    font-size: 0.8rem; /* Smaller text on mobile so it fits on one line */
+    font-size: 0.75rem; /* Shrinks text just enough to fit on one line */
   }
 }
 
@@ -87,7 +88,6 @@ body {
   color: var(--text-main);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.95rem;
   transition: color 0.2s ease;
 }
 
@@ -286,6 +286,7 @@ input:focus, select:focus, textarea:focus {
   transform: scale(1.06);
 }
 
+/* Admin Table & Stats */
 .hidden {
   display: none;
 }
