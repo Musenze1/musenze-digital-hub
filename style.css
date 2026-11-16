@@ -19,6 +19,13 @@
   font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
+/* --- NEW MOBILE FIXES ADDED HERE --- */
+html, body {
+  overflow-x: hidden; /* Stops horizontal scrolling */
+  width: 100%;
+  max-width: 100vw; /* Forces phone to fit the screen perfectly */
+}
+
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
@@ -192,7 +199,7 @@ input:focus, select:focus, textarea:focus {
 /* 1. Primary Button is now WINE (Book a Session & Select Pro) */
 .btn-primary {
   background: var(--brand-wine);
-  color: #ffffff; /* White text for better contrast on wine */
+  color: #ffffff; 
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
