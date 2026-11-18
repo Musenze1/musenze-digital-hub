@@ -3,7 +3,7 @@
   --bg-card: #181b22;
   --accent: #f59e0b; /* Gold/Yellow */
   --accent-hover: #d97706;
-  --brand-wine: #A31D3B; /* Deep Wine for primary buttons */
+  --brand-wine: #A31D3B; 
   --brand-wine-hover: #80162E;
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
@@ -46,35 +46,25 @@ body {
 }
 
 .logo {
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--accent);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  color: var(--accent);
+  font-weight: 800;
+  flex-wrap: nowrap; 
 }
 
 .logo img {
-  max-height: 60px;
+  height: 50px;
   width: auto;
   display: block;
+  flex-shrink: 0; 
 }
 
-/* --- THIS IS THE FIX FOR THE TEXT WRAPPING --- */
 .logo span {
   font-size: 1.1rem;
   letter-spacing: 1px;
-  line-height: 1.2;
-  white-space: nowrap; /* Forces text to stay on one line */
-}
-
-@media (max-width: 600px) {
-  .logo img {
-    height: 45px; /* Makes logo slightly smaller on mobile */
-  }
-  .logo span {
-    font-size: 0.75rem; /* Shrinks text just enough to fit on one line */
-  }
+  white-space: nowrap; 
 }
 
 .navbar nav {
@@ -95,6 +85,34 @@ body {
   color: var(--brand-wine); 
 }
 
+/* --- NEW MOBILE NAVIGATION FIX --- */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column; /* Stacks logo on top of links */
+    padding: 1rem;
+  }
+  
+  .logo img {
+    height: 45px; 
+  }
+  
+  .logo span {
+    font-size: 0.85rem; 
+  }
+
+  .navbar nav {
+    justify-content: center; /* Centers the links below the logo */
+    width: 100%;
+    gap: 0.8rem; /* Brings the links closer together */
+  }
+
+  .navbar nav a {
+    font-size: 0.9rem; /* Slightly smaller text to fit better */
+    white-space: nowrap;
+  }
+}
+/* --------------------------------- */
+
 .hero {
   text-align: center;
   padding: 5rem 1.5rem;
@@ -104,6 +122,9 @@ body {
 .hero h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
+  font-weight: 800;
+  line-height: 1.2; 
+  letter-spacing: -0.5px; 
 }
 
 .hero p {
@@ -111,6 +132,15 @@ body {
   max-width: 620px;
   margin: 0 auto 2rem;
   font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 1.9rem; 
+  }
+  .hero p {
+    font-size: 1rem; 
+  }
 }
 
 .hero-btns {
@@ -286,7 +316,6 @@ input:focus, select:focus, textarea:focus {
   transform: scale(1.06);
 }
 
-/* Admin Table & Stats */
 .hidden {
   display: none;
 }
