@@ -18,9 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   applySavedSiteText();
   loadPublishedPosts();
   loadGlobalCounter(); 
+  loadApprovedReviews(); // Load Reviews
 });
 
-// Load Headline & Price Updates
 async function applySavedSiteText() {
   try {
     const snap = await getDoc(doc(db, "siteContent", "homepage"));
@@ -33,21 +33,16 @@ async function applySavedSiteText() {
         }
       });
     }
-  } catch (err) {
-    console.error("Error loading site content:", err);
-  }
+  } catch (err) { console.error("Error loading site content:", err); }
 }
 
-// Load Published Studio Posts
 async function loadPublishedPosts() {
   const postsGrid = document.getElementById("public-posts-grid");
   if (!postsGrid) return;
-
   try {
     const q = query(collection(db, "siteContent"), orderBy("timestamp", "desc"));
     const querySnapshot = await getDocs(q);
     const dynamicCards = [];
-
     querySnapshot.forEach((docSnap) => {
       if (docSnap.id !== "homepage") {
         const post = docSnap.data();
@@ -62,23 +57,16 @@ async function loadPublishedPosts() {
         `);
       }
     });
-
-    if (dynamicCards.length > 0) {
-      postsGrid.innerHTML = dynamicCards.join("") + postsGrid.innerHTML;
-    }
-  } catch (err) {
-    console.error("Error loading posts:", err);
-  }
+    if (dynamicCards.length > 0) postsGrid.innerHTML = dynamicCards.join("") + postsGrid.innerHTML;
+  } catch (err) { console.error("Error loading posts:", err); }
 }
 
-// Save Client Booking Form
 const bookingForm = document.getElementById("booking-form");
 if (bookingForm) {
   bookingForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const statusMsg = document.getElementById("form-status");
     const submitBtn = bookingForm.querySelector("button[type='submit']");
-
     submitBtn.disabled = true;
     submitBtn.innerText = "Sending Booking...";
 
@@ -96,10 +84,9 @@ if (bookingForm) {
     try {
       await addDoc(collection(db, "bookings"), newBooking);
       statusMsg.style.color = "#10b981";
-      statusMsg.innerText = "Booking received! Musenze Digital Hub & Studio will contact you shortly.";
+      statusMsg.innerText = "Booking received! We will contact you shortly.";
       bookingForm.reset();
     } catch (err) {
-      console.error("Booking error:", err);
       statusMsg.style.color = "#ef4444";
       statusMsg.innerText = "Could not send booking right now. Please tap the WhatsApp button.";
     } finally {
@@ -109,24 +96,78 @@ if (bookingForm) {
   });
 }
 
-// NEW: Load Only The Global Counter
+// --- NEW: SUBMIT REVIEW ---
+const reviewForm = document.getElementById("review-form");
+if (reviewForm) {
+  reviewForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const statusMsg = document.getElementById("review-status");
+    const submitBtn = reviewForm.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Submitting...";
+
+    const newReview = {
+      name: document.getElementById("review-name").value,
+      rating: document.getElementById("review-rating").value,
+      text: document.getElementById("review-text").value,
+      status: "Pending", // Reviews start as Pending until admin approves
+      timestamp: Date.now()
+    };
+
+    try {
+      await addDoc(collection(db, "reviews"), newReview);
+      statusMsg.style.color = "#10b981";
+      statusMsg.innerText = "Thank you! Your review has been submitted for approval.";
+      reviewForm.reset();
+    } catch (err) {
+      statusMsg.style.color = "#ef4444";
+      statusMsg.innerText = "Error submitting review. Please try again.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Submit Review";
+    }
+  });
+}
+
+// --- NEW: LOAD APPROVED REVIEWS ---
+async function loadApprovedReviews() {
+  const reviewsGrid = document.getElementById("public-reviews-grid");
+  if (!reviewsGrid) return;
+
+  try {
+    const q = query(collection(db, "reviews"), where("status", "==", "Approved"), orderBy("timestamp", "desc"));
+    const snap = await getDocs(q);
+    const reviews = [];
+
+    snap.forEach((docSnap) => {
+      reviews.push(docSnap.data());
+    });
+
+    if (reviews.length === 0) {
+      reviewsGrid.innerHTML = `<p style="color: #9ca3af; text-align: center; width: 100%;">No reviews yet. Be the first to leave one!</p>`;
+      return;
+    }
+
+    reviewsGrid.innerHTML = reviews.map(r => `
+      <div class="card" style="border-left: 4px solid var(--accent);">
+        <div style="color: #f59e0b; font-size: 1.2rem; margin-bottom: 0.5rem;">
+          ${"⭐".repeat(parseInt(r.rating))}
+        </div>
+        <p style="font-style: italic; color: #d1d5db; margin-bottom: 1rem;">"${r.text}"</p>
+        <strong style="color: var(--text-main);">- ${r.name}</strong>
+      </div>
+    `).join("");
+  } catch (err) {
+    console.error("Error loading reviews:", err);
+  }
+}
+
 async function loadGlobalCounter() {
   const counterContainer = document.getElementById("completed-counter"); 
   if (!counterContainer) return;
-
   try {
-    // Fetch ONLY completed bookings
-    const q = query(
-      collection(db, "bookings"), 
-      where("status", "==", "Completed")
-    );
-    
+    const q = query(collection(db, "bookings"), where("status", "==", "Completed"));
     const snap = await getDocs(q);
-    
-    // Update the big number on the screen
     counterContainer.innerText = snap.size; 
-    
-  } catch (err) {
-    console.error("Error loading counter:", err);
-  }
+  } catch (err) { console.error("Error loading counter:", err); }
 }
