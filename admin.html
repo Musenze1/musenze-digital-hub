@@ -4,45 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Portal | Musenze Digital Hub & Studio</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
   <header class="navbar">
-    <div class="logo">MUSENZE ADMIN PORTAL</div>
+    <div class="logo">
+      <img src="939-removebg-preview.png" alt="Musenze Admin Logo">
+      <span>ADMIN PORTAL</span>
+    </div>
     <nav>
       <a href="index.html" class="btn-outline">Back to Website</a>
       <button id="logout-btn" class="btn-danger hidden">Logout</button>
     </nav>
   </header>
 
-  <!-- Firebase Email/Password Login Box -->
   <section id="login-section" class="container">
     <form id="admin-login-form" class="form-box" style="text-align:center;">
       <h2>Studio Admin Login</h2>
       <p style="color:var(--text-muted); margin-bottom:1.5rem;">Sign in with your authorized studio admin email and password.</p>
-      
       <div class="form-group" style="text-align:left;">
         <label for="admin-email">Admin Email</label>
         <input type="email" id="admin-email" required placeholder="Enter admin email">
       </div>
-      
       <div class="form-group" style="text-align:left;">
         <label for="admin-password">Password</label>
         <input type="password" id="admin-password" required placeholder="Enter password">
       </div>
-      
-      <!-- Error message will appear here -->
       <p id="login-error" class="status-msg" style="color:var(--danger); margin-bottom: 1rem;"></p>
-      
       <button type="submit" id="login-submit-btn" class="btn-primary" style="width:100%;">Sign In to Dashboard</button>
     </form>
   </section>
 
-  <!-- Main Admin Dashboard -->
   <section id="dashboard-section" class="container hidden">
 
-    <!-- 1. Publish New Studio Job / Post -->
     <div class="form-box" style="margin-bottom:3rem;">
       <h2 style="margin-bottom:1rem;">1. Post New Work / Studio Update</h2>
       <form id="post-form">
@@ -70,48 +65,53 @@
         </div>
         <div class="form-group">
           <label for="post-desc">Job Description</label>
-          <textarea id="post-desc" rows="3" required placeholder="Describe what you did for this client..."></textarea>
+          <textarea id="post-desc" rows="3" required placeholder="Describe what you did..."></textarea>
         </div>
         <button type="submit" class="btn-primary" style="width:100%;">Publish Post to Website</button>
       </form>
       <div id="admin-posts-list" style="margin-top:1.5rem;"></div>
     </div>
 
-    <!-- 2. Private Site Text & Pricing Editor -->
+    <!-- NEW SECTION: MANAGE REVIEWS -->
     <div class="form-box" style="margin-bottom:3rem;">
-      <h2 style="margin-bottom:1rem;">2. Edit Website Headlines & Prices</h2>
+      <h2 style="margin-bottom:1rem;">2. Manage Client Reviews</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Approve reviews to make them visible on the public website.</p>
+      <div id="admin-reviews-list"></div>
+    </div>
+
+    <div class="form-box" style="margin-bottom:3rem;">
+      <h2 style="margin-bottom:1rem;">3. Edit Website Headlines & Prices</h2>
       <form id="site-text-form">
         <div class="form-group">
           <label for="edit-hero-title">Main Hero Headline</label>
-          <input type="text" id="edit-hero-title" value="Creative Production & Digital Innovation">
+          <input type="text" id="edit-hero-title">
         </div>
         <div class="form-group">
           <label for="edit-hero-subtitle">Hero Subheadline</label>
-          <textarea id="edit-hero-subtitle" rows="2">Professional audio recording, 4K video production, branding, and custom web development built to elevate your brand.</textarea>
+          <textarea id="edit-hero-subtitle" rows="2"></textarea>
         </div>
         <div class="form-group">
           <label for="edit-pkg1-price">Starter Session Price</label>
-          <input type="text" id="edit-pkg1-price" value="Custom Quote">
+          <input type="text" id="edit-pkg1-price">
         </div>
         <div class="form-group">
           <label for="edit-pkg2-price">Pro Creator Bundle Price</label>
-          <input type="text" id="edit-pkg2-price" value="Most Popular">
+          <input type="text" id="edit-pkg2-price">
         </div>
         <div class="form-group">
           <label for="edit-pkg3-price">Business Digital Launch Price</label>
-          <input type="text" id="edit-pkg3-price" value="Enterprise">
+          <input type="text" id="edit-pkg3-price">
         </div>
         <div class="form-group">
           <label for="edit-footer-contact">Footer Contact Line</label>
-          <input type="text" id="edit-footer-contact" value="Call / WhatsApp: +234 904 033 2445">
+          <input type="text" id="edit-footer-contact">
         </div>
         <button type="submit" class="btn-primary" style="width:100%;">Save Website Text Changes</button>
       </form>
     </div>
 
-    <!-- 3. Bookings Management -->
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
-      <h2>3. Bookings Management</h2>
+      <h2>4. Bookings Management</h2>
       <button id="export-csv-btn" class="btn-primary">Export CSV Spreadsheet</button>
     </div>
 
@@ -148,7 +148,6 @@
     </div>
   </section>
 
-  <!-- THIS IS THE ONLY SCRIPT TAG YOU NEED -->
   <script type="module" src="admin.js"></script>
 </body>
 </html>
