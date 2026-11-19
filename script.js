@@ -36,15 +36,15 @@ async function applySavedSiteText() {
   } catch (err) { console.error("Error loading site content:", err); }
 }
 
-// --- NEW: HELPER FUNCTION TO EXTRACT YOUTUBE ID ---
+// --- BULLETPROOF YOUTUBE LINK EXTRACTOR ---
 function getYouTubeID(url) {
   if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  // This regex handles standard links, share links, and YouTube Shorts
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
   const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
+  return (match && match[1]) ? match[1] : null;
 }
 
-// --- UPDATED: LOAD POSTS WITH EMBEDDED VIDEO ---
 async function loadPublishedPosts() {
   const postsGrid = document.getElementById("public-posts-grid");
   if (!postsGrid) return;
@@ -74,7 +74,7 @@ async function loadPublishedPosts() {
           mediaHTML = `<img src="${post.image}" alt="${post.title}" style="width:100%; border-radius:6px; margin-bottom:0.8rem; max-height:250px; object-fit:cover;">`;
         }
 
-        // Add the "View Project" button only if there is a link but NO YouTube video (e.g. an Instagram link)
+        // Add the "View Project" button only if there is a link but NO YouTube video
         let buttonHTML = "";
         if (post.link && !videoId) {
           buttonHTML = `<a href="${post.link}" target="_blank" rel="noopener" class="btn-outline" style="margin-top:0.8rem; display:inline-block;">View Project</a>`;
@@ -199,4 +199,4 @@ async function loadGlobalCounter() {
     const snap = await getDocs(q);
     counterContainer.innerText = snap.size; 
   } catch (err) { console.error("Error loading counter:", err); }
-}
+        }
