@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Portal | Musenze Digital Hub & Studio</title>
-  <link rel="stylesheet" href="style.css?v=22">
+  <link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 
@@ -19,38 +19,40 @@
     </nav>
   </header>
 
-  <!-- AUTH SECTION (LOGIN & REGISTER) -->
   <section id="auth-section" class="container">
+    <!-- LOGIN BOX -->
     <div id="login-box" class="form-box" style="text-align:center;">
       <h2>Staff Login</h2>
-      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Sign in to your account.</p>
       <div class="form-group" style="text-align:left;">
-        <label>Email</label>
-        <input type="email" id="login-email" required placeholder="Enter email">
+        <label>Email</label><input type="email" id="login-email" required placeholder="Enter email">
       </div>
       <div class="form-group" style="text-align:left;">
-        <label>Password</label>
-        <input type="password" id="login-password" required placeholder="Enter password">
+        <label>Password</label><input type="password" id="login-password" required placeholder="Enter password">
       </div>
       <p id="login-error" class="status-msg" style="color:var(--danger); margin-bottom: 1rem;"></p>
       <button id="login-btn" class="btn-primary" style="width:100%; margin-bottom: 1rem;">Sign In</button>
-      <p style="color:var(--text-muted); font-size: 0.9rem;">New Manager? <a href="#" onclick="toggleRegister()" style="color: var(--accent);">Register Here</a></p>
+      <p style="color:var(--text-muted); font-size: 0.9rem;">New Staff? <a href="#" onclick="toggleRegister()" style="color: var(--accent);">Register Here</a></p>
     </div>
 
+    <!-- REGISTER BOX -->
     <div id="register-box" class="form-box hidden" style="text-align:center;">
-      <h2>Register as Manager</h2>
-      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Create an account. You must be approved by the Admin.</p>
+      <h2>Register Staff Account</h2>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem;">Choose your role. You must be approved to login.</p>
       <div class="form-group" style="text-align:left;">
-        <label>Full Name</label>
-        <input type="text" id="reg-name" required placeholder="Enter your full name">
+        <label>Full Name</label><input type="text" id="reg-name" required placeholder="Enter full name">
       </div>
       <div class="form-group" style="text-align:left;">
-        <label>Email</label>
-        <input type="email" id="reg-email" required placeholder="Enter email">
+        <label>Email</label><input type="email" id="reg-email" required placeholder="Enter email">
       </div>
       <div class="form-group" style="text-align:left;">
-        <label>Password</label>
-        <input type="password" id="reg-password" required placeholder="Create a password (min 6 characters)">
+        <label>Password</label><input type="password" id="reg-password" required placeholder="Create a password (min 6 chars)">
+      </div>
+      <div class="form-group" style="text-align:left;">
+        <label>I am registering as a:</label>
+        <select id="reg-role" required>
+          <option value="coworker">Coworker (Editor, Assistant, etc.)</option>
+          <option value="manager">Manager (Can hire Coworkers)</option>
+        </select>
       </div>
       <p id="reg-error" class="status-msg" style="color:var(--danger); margin-bottom: 1rem;"></p>
       <button id="register-btn" class="btn-primary" style="width:100%; margin-bottom: 1rem;">Register Account</button>
@@ -61,34 +63,32 @@
   <!-- PENDING / SUSPENDED SCREENS -->
   <section id="status-screen" class="container hidden" style="text-align: center; padding: 5rem 1rem;">
     <h2 id="status-title" style="color: var(--brand-wine);">Account Pending</h2>
-    <p id="status-message" style="color: var(--text-muted); margin-top: 1rem;">Your account is waiting for Admin approval. Please check back later.</p>
+    <p id="status-message" style="color: var(--text-muted); margin-top: 1rem;">Your account is waiting for approval.</p>
     <button onclick="signOut(auth)" class="btn-outline" style="margin-top: 2rem;">Logout</button>
   </section>
 
-  <!-- MAIN DASHBOARD (HIDDEN UNTIL LOGGED IN & APPROVED) -->
+  <!-- MAIN DASHBOARD -->
   <section id="dashboard-section" class="container hidden">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
       <h2>Dashboard</h2>
-      <span id="user-role-badge" style="background: var(--brand-wine); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">Role: Manager</span>
+      <span id="user-role-badge" style="background: var(--brand-wine); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">Role: Loading...</span>
     </div>
 
-    <!-- BOSS ONLY: STAFF MANAGEMENT -->
-    <div class="form-box boss-only" style="margin-bottom:3rem; border-color: #f59e0b;">
-      <h2 style="margin-bottom:1rem; color: #f59e0b;">Staff Management (Boss Only)</h2>
+    <!-- STAFF MANAGEMENT (Visible to Admin & Manager) -->
+    <div id="staff-management-section" class="form-box hidden" style="margin-bottom:3rem; border-color: #f59e0b;">
+      <h2 style="margin-bottom:1rem; color: #f59e0b;">Team Management</h2>
+      <p id="staff-management-desc" style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;"></p>
       <div id="staff-list"></div>
     </div>
 
-    <!-- BOSS ONLY: POST WORK -->
-    <div class="form-box boss-only" style="margin-bottom:3rem;">
+    <!-- POST WORK (Admin Only) -->
+    <div class="form-box admin-only hidden" style="margin-bottom:3rem;">
       <h2 style="margin-bottom:1rem;">Post New Work</h2>
       <form id="post-form">
+        <div class="form-group"><label>Job Title</label><input type="text" id="post-title" required></div>
         <div class="form-group">
-          <label for="post-title">Job / Project Title</label>
-          <input type="text" id="post-title" required placeholder="e.g. New Commercial Video Shoot">
-        </div>
-        <div class="form-group">
-          <label for="post-category">Category</label>
+          <label>Category</label>
           <select id="post-category">
             <option value="Film & Video Production">Film & Video Production</option>
             <option value="Music Video">Music Video</option>
@@ -96,86 +96,63 @@
             <option value="Digital Marketing">Digital Marketing</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="post-image">Image Link (Optional)</label>
-          <input type="url" id="post-image" placeholder="Paste image URL">
-        </div>
-        <div class="form-group">
-          <label for="post-link">YouTube Link (For Videos)</label>
-          <input type="url" id="post-link" placeholder="Paste YouTube link here">
-        </div>
-        <div class="form-group">
-          <label for="post-desc">Job Description</label>
-          <textarea id="post-desc" rows="3" required placeholder="Describe the project..."></textarea>
-        </div>
+        <div class="form-group"><label>Image Link</label><input type="url" id="post-image"></div>
+        <div class="form-group"><label>YouTube Link</label><input type="url" id="post-link"></div>
+        <div class="form-group"><label>Description</label><textarea id="post-desc" rows="3" required></textarea></div>
         <button type="submit" class="btn-primary" style="width:100%;">Publish Post</button>
       </form>
       <div id="admin-posts-list" style="margin-top:1.5rem;"></div>
     </div>
 
-    <!-- MANAGER & BOSS: MANUAL BOOKING -->
-    <div class="form-box" style="margin-bottom:3rem; border-color: var(--brand-wine);">
-      <h2 style="margin-bottom:1rem;">Add Manual Booking (Walk-in Client)</h2>
+    <!-- MANUAL BOOKING (Admin & Manager) -->
+    <div class="form-box manager-only hidden" style="margin-bottom:3rem; border-color: var(--brand-wine);">
+      <h2 style="margin-bottom:1rem;">Add Manual Booking</h2>
       <form id="manual-booking-form">
+        <div class="form-group"><label>Client Name</label><input type="text" id="manual-name" required></div>
+        <div class="form-group"><label>Contact</label><input type="text" id="manual-contact" required></div>
         <div class="form-group">
-          <label for="manual-name">Client Full Name</label>
-          <input type="text" id="manual-name" required placeholder="Enter client name">
-        </div>
-        <div class="form-group">
-          <label for="manual-contact">Phone / WhatsApp or Email</label>
-          <input type="text" id="manual-contact" required placeholder="e.g. +234...">
-        </div>
-        <div class="form-group">
-          <label for="manual-service">Service / Package</label>
+          <label>Service</label>
           <select id="manual-service" required>
             <option value="Music Video Production">Music Video Production</option>
-            <option value="Film & Video Editing">Film & Commercial Video Production</option>
-            <option value="Digital & Web Hub">Digital & Web Hub (Design/Website)</option>
-            <option value="Digital Marketing">Digital Marketing & Strategy</option>
-            <option value="Pro Creator Bundle">Pro Creator Bundle</option>
-            <option value="Full Creative Package">Full Creative Package</option>
+            <option value="Film & Video Editing">Film & Video Production</option>
+            <option value="Digital & Web Hub">Web & Graphic Design</option>
+            <option value="Digital Marketing">Digital Marketing</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="manual-date">Preferred Date</label>
-          <input type="date" id="manual-date" required>
-        </div>
-        <div class="form-group">
-          <label for="manual-details">Project Details</label>
-          <textarea id="manual-details" rows="3" required placeholder="Describe the project..."></textarea>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%;">Save Client to Database</button>
+        <div class="form-group"><label>Date</label><input type="date" id="manual-date" required></div>
+        <div class="form-group"><label>Details</label><textarea id="manual-details" rows="3" required></textarea></div>
+        <button type="submit" class="btn-primary" style="width:100%;">Save Client</button>
         <p id="manual-status" class="status-msg" style="text-align: center;"></p>
       </form>
     </div>
 
-    <!-- BOSS ONLY: MANAGE REVIEWS & SETTINGS -->
-    <div class="form-box boss-only" style="margin-bottom:3rem;">
-      <h2 style="margin-bottom:1rem;">Manage Client Reviews</h2>
+    <!-- REVIEWS & SETTINGS (Admin Only) -->
+    <div class="form-box admin-only hidden" style="margin-bottom:3rem;">
+      <h2 style="margin-bottom:1rem;">Manage Reviews</h2>
       <div id="admin-reviews-list"></div>
     </div>
 
-    <div class="form-box boss-only" style="margin-bottom:3rem;">
+    <div class="form-box admin-only hidden" style="margin-bottom:3rem;">
       <h2 style="margin-bottom:1rem;">Edit Website Content</h2>
       <form id="site-text-form">
-        <div class="form-group"><label>Main Hero Headline</label><input type="text" id="edit-hero-title"></div>
+        <div class="form-group"><label>Hero Headline</label><input type="text" id="edit-hero-title"></div>
         <div class="form-group"><label>Hero Subheadline</label><textarea id="edit-hero-subtitle" rows="2"></textarea></div>
-        <div class="form-group"><label>Starter Session Price</label><input type="text" id="edit-pkg1-price"></div>
-        <div class="form-group"><label>Pro Creator Bundle Price</label><input type="text" id="edit-pkg2-price"></div>
-        <div class="form-group"><label>Business Digital Launch Price</label><input type="text" id="edit-pkg3-price"></div>
-        <div class="form-group"><label>Footer Contact Line</label><input type="text" id="edit-footer-contact"></div>
-        <button type="submit" class="btn-primary" style="width:100%;">Save Website Changes</button>
+        <div class="form-group"><label>Starter Price</label><input type="text" id="edit-pkg1-price"></div>
+        <div class="form-group"><label>Pro Bundle Price</label><input type="text" id="edit-pkg2-price"></div>
+        <div class="form-group"><label>Business Price</label><input type="text" id="edit-pkg3-price"></div>
+        <div class="form-group"><label>Footer Contact</label><input type="text" id="edit-footer-contact"></div>
+        <button type="submit" class="btn-primary" style="width:100%;">Save Changes</button>
       </form>
     </div>
 
-    <!-- MANAGER & BOSS: BOOKINGS TABLE -->
+    <!-- BOOKINGS TABLE (Visible to Everyone) -->
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
       <h2>Bookings Management</h2>
-      <button id="export-csv-btn" class="btn-primary">Export CSV</button>
+      <button id="export-csv-btn" class="btn-primary admin-only hidden">Export CSV</button>
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card"><h3 id="stat-total">0</h3><p>Total Bookings</p></div>
+      <div class="stat-card"><h3 id="stat-total">0</h3><p>Total</p></div>
       <div class="stat-card"><h3 id="stat-pending">0</h3><p>Pending</p></div>
       <div class="stat-card"><h3 id="stat-completed">0</h3><p>Completed</p></div>
     </div>
@@ -183,9 +160,7 @@
     <div class="table-wrapper">
       <table>
         <thead>
-          <tr>
-            <th>Client</th><th>Contact</th><th>Service</th><th>Date</th><th>Details</th><th>Status</th><th>Actions</th>
-          </tr>
+          <tr><th>Client</th><th>Contact</th><th>Service</th><th>Date</th><th>Details</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody id="admin-table-body"></tbody>
       </table>
