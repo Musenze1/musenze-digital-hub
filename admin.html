@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Portal | Musenze Digital Hub & Studio</title>
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 
@@ -38,6 +38,7 @@
 
   <section id="dashboard-section" class="container hidden">
 
+    <!-- 1. POST NEW WORK -->
     <div class="form-box" style="margin-bottom:3rem;">
       <h2 style="margin-bottom:1rem;">1. Post New Work / Studio Update</h2>
       <form id="post-form">
@@ -72,14 +73,53 @@
       <div id="admin-posts-list" style="margin-top:1.5rem;"></div>
     </div>
 
+    <!-- 2. MANUAL BOOKING (NEW) -->
+    <div class="form-box" style="margin-bottom:3rem; border-color: var(--brand-wine);">
+      <h2 style="margin-bottom:1rem;">2. Add Manual Booking (Walk-in Client)</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Use this form to register a client who is booking in person at the office.</p>
+      <form id="manual-booking-form">
+        <div class="form-group">
+          <label for="manual-name">Client Full Name</label>
+          <input type="text" id="manual-name" required placeholder="Enter client name">
+        </div>
+        <div class="form-group">
+          <label for="manual-contact">Phone / WhatsApp or Email</label>
+          <input type="text" id="manual-contact" required placeholder="e.g. +234... or email">
+        </div>
+        <div class="form-group">
+          <label for="manual-service">Service / Package</label>
+          <select id="manual-service" required>
+            <option value="Music Video Production">Music Video Production</option>
+            <option value="Film & Video Editing">Film & Commercial Video Production</option>
+            <option value="Digital & Web Hub">Digital & Web Hub (Design/Website)</option>
+            <option value="Digital Marketing">Digital Marketing & Strategy</option>
+            <option value="Pro Creator Bundle">Pro Creator Bundle</option>
+            <option value="Full Creative Package">Full Creative Package</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="manual-date">Preferred Date</label>
+          <input type="date" id="manual-date" required>
+        </div>
+        <div class="form-group">
+          <label for="manual-details">Project Details</label>
+          <textarea id="manual-details" rows="3" required placeholder="Describe the project..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Save Client to Database</button>
+        <p id="manual-status" class="status-msg" style="text-align: center;"></p>
+      </form>
+    </div>
+
+    <!-- 3. MANAGE REVIEWS -->
     <div class="form-box" style="margin-bottom:3rem;">
-      <h2 style="margin-bottom:1rem;">2. Manage Client Reviews</h2>
+      <h2 style="margin-bottom:1rem;">3. Manage Client Reviews</h2>
       <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Approve reviews to make them visible on the public website.</p>
       <div id="admin-reviews-list"></div>
     </div>
 
+    <!-- 4. EDIT WEBSITE TEXT -->
     <div class="form-box" style="margin-bottom:3rem;">
-      <h2 style="margin-bottom:1rem;">3. Edit Website Headlines & Prices</h2>
+      <h2 style="margin-bottom:1rem;">4. Edit Website Headlines & Prices</h2>
       <form id="site-text-form">
         <div class="form-group">
           <label for="edit-hero-title">Main Hero Headline</label>
@@ -109,8 +149,9 @@
       </form>
     </div>
 
+    <!-- 5. BOOKINGS MANAGEMENT -->
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
-      <h2>4. Bookings Management</h2>
+      <h2>5. Bookings Management</h2>
       <button id="export-csv-btn" class="btn-primary">Export CSV Spreadsheet</button>
     </div>
 
