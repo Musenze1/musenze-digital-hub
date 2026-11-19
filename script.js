@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applySavedSiteText();
   loadPublishedPosts();
   loadGlobalCounter(); 
-  loadApprovedReviews(); // Load Reviews
+  loadApprovedReviews(); 
 });
 
 async function applySavedSiteText() {
@@ -36,28 +36,65 @@ async function applySavedSiteText() {
   } catch (err) { console.error("Error loading site content:", err); }
 }
 
+// --- NEW: HELPER FUNCTION TO EXTRACT YOUTUBE ID ---
+function getYouTubeID(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+// --- UPDATED: LOAD POSTS WITH EMBEDDED VIDEO ---
 async function loadPublishedPosts() {
   const postsGrid = document.getElementById("public-posts-grid");
   if (!postsGrid) return;
+  
   try {
     const q = query(collection(db, "siteContent"), orderBy("timestamp", "desc"));
     const querySnapshot = await getDocs(q);
     const dynamicCards = [];
+
     querySnapshot.forEach((docSnap) => {
       if (docSnap.id !== "homepage") {
         const post = docSnap.data();
+        let mediaHTML = "";
+
+        // Check if the link is a YouTube video
+        const videoId = getYouTubeID(post.link);
+
+        if (videoId) {
+          // If it's a YouTube video, embed the player perfectly
+          mediaHTML = `
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #2d323e; background: #000;">
+              <iframe src="https://www.youtube.com/embed/${videoId}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          `;
+        } else if (post.image) {
+          // If it's just an image post
+          mediaHTML = `<img src="${post.image}" alt="${post.title}" style="width:100%; border-radius:6px; margin-bottom:0.8rem; max-height:250px; object-fit:cover;">`;
+        }
+
+        // Add the "View Project" button only if there is a link but NO YouTube video (e.g. an Instagram link)
+        let buttonHTML = "";
+        if (post.link && !videoId) {
+          buttonHTML = `<a href="${post.link}" target="_blank" rel="noopener" class="btn-outline" style="margin-top:0.8rem; display:inline-block;">View Project</a>`;
+        }
+
         dynamicCards.push(`
           <div class="card featured">
-            ${post.image ? `<img src="${post.image}" alt="${post.title}" style="width:100%; border-radius:6px; margin-bottom:0.8rem; max-height:200px; object-fit:cover;">` : ""}
+            ${mediaHTML}
             <small style="color:#9ca3af;">${post.category} • ${post.date}</small>
             <h3 style="margin-top:0.3rem;">${post.title}</h3>
             <p>${post.description}</p>
-            ${post.link ? `<a href="${post.link}" target="_blank" rel="noopener" class="btn-outline" style="margin-top:0.8rem; display:inline-block;">View Project</a>` : ""}
+            ${buttonHTML}
           </div>
         `);
       }
     });
-    if (dynamicCards.length > 0) postsGrid.innerHTML = dynamicCards.join("") + postsGrid.innerHTML;
+
+    if (dynamicCards.length > 0) {
+      postsGrid.innerHTML = dynamicCards.join("") + postsGrid.innerHTML;
+    }
   } catch (err) { console.error("Error loading posts:", err); }
 }
 
@@ -96,7 +133,6 @@ if (bookingForm) {
   });
 }
 
-// --- NEW: SUBMIT REVIEW ---
 const reviewForm = document.getElementById("review-form");
 if (reviewForm) {
   reviewForm.addEventListener("submit", async (e) => {
@@ -110,7 +146,7 @@ if (reviewForm) {
       name: document.getElementById("review-name").value,
       rating: document.getElementById("review-rating").value,
       text: document.getElementById("review-text").value,
-      status: "Pending", // Reviews start as Pending until admin approves
+      status: "Pending", 
       timestamp: Date.now()
     };
 
@@ -129,19 +165,14 @@ if (reviewForm) {
   });
 }
 
-// --- NEW: LOAD APPROVED REVIEWS ---
 async function loadApprovedReviews() {
   const reviewsGrid = document.getElementById("public-reviews-grid");
   if (!reviewsGrid) return;
-
   try {
     const q = query(collection(db, "reviews"), where("status", "==", "Approved"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
     const reviews = [];
-
-    snap.forEach((docSnap) => {
-      reviews.push(docSnap.data());
-    });
+    snap.forEach((docSnap) => { reviews.push(docSnap.data()); });
 
     if (reviews.length === 0) {
       reviewsGrid.innerHTML = `<p style="color: #9ca3af; text-align: center; width: 100%;">No reviews yet. Be the first to leave one!</p>`;
@@ -157,9 +188,7 @@ async function loadApprovedReviews() {
         <strong style="color: var(--text-main);">- ${r.name}</strong>
       </div>
     `).join("");
-  } catch (err) {
-    console.error("Error loading reviews:", err);
-  }
+  } catch (err) { console.error("Error loading reviews:", err); }
 }
 
 async function loadGlobalCounter() {
