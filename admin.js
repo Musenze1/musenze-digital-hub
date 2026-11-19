@@ -33,7 +33,7 @@ onAuthStateChanged(auth, (user) => {
     loadAdminData();
     renderAdminPosts();
     loadSavedTextIntoForm();
-    loadAdminReviews(); // Load Reviews
+    loadAdminReviews(); 
   } else {
     loginSection.classList.remove("hidden");
     dashboardSection.classList.add("hidden");
@@ -91,6 +91,44 @@ if (postForm) {
   });
 }
 
+// --- NEW: MANUAL BOOKING FORM ---
+const manualBookingForm = document.getElementById("manual-booking-form");
+if (manualBookingForm) {
+  manualBookingForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = manualBookingForm.querySelector("button[type='submit']");
+    const statusMsg = document.getElementById("manual-status");
+    btn.disabled = true;
+    btn.innerText = "Saving Client...";
+
+    const manualBooking = {
+      name: document.getElementById("manual-name").value,
+      contact: document.getElementById("manual-contact").value,
+      service: document.getElementById("manual-service").value,
+      date: document.getElementById("manual-date").value,
+      details: document.getElementById("manual-details").value,
+      status: "Pending", // Defaults to Pending, you can complete it later
+      createdAt: new Date().toLocaleDateString(),
+      timestamp: Date.now(),
+      source: "Walk-in (Admin)" // Identifies this was added manually
+    };
+
+    try {
+      await addDoc(collection(db, "bookings"), manualBooking);
+      statusMsg.style.color = "#10b981";
+      statusMsg.innerText = "Client successfully saved to the database!";
+      manualBookingForm.reset();
+      loadAdminData(); // Refresh the bookings table automatically
+    } catch (err) {
+      statusMsg.style.color = "#ef4444";
+      statusMsg.innerText = "Error saving client: " + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Save Client to Database";
+    }
+  });
+}
+
 async function renderAdminPosts() {
   const container = document.getElementById("admin-posts-list");
   if (!container) return;
@@ -120,23 +158,19 @@ async function renderAdminPosts() {
   } catch (err) { container.innerHTML = `<p style="color:#ef4444;">Failed to load posts.</p>`; }
 }
 
-// --- NEW: LOAD ADMIN REVIEWS ---
 async function loadAdminReviews() {
   const container = document.getElementById("admin-reviews-list");
   if (!container) return;
   container.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">Loading reviews...</p>`;
-  
   try {
     const q = query(collection(db, "reviews"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
     const reviews = [];
     snap.forEach((docSnap) => { reviews.push({ id: docSnap.id, ...docSnap.data() }); });
-
     if (reviews.length === 0) {
       container.innerHTML = `<p style="color:#9ca3af; font-size:0.9rem;">No reviews submitted yet.</p>`;
       return;
     }
-
     container.innerHTML = reviews.map(r => `
       <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid #2d323e; border-radius:6px; margin-bottom:0.5rem; flex-wrap: wrap; gap: 10px;">
         <div style="flex: 1; min-width: 200px;">
@@ -150,14 +184,12 @@ async function loadAdminReviews() {
         </div>
       </div>
     `).join("");
-
     container.querySelectorAll(".approve-review-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         await updateDoc(doc(db, "reviews", btn.dataset.id), { status: "Approved" });
         loadAdminReviews();
       });
     });
-
     container.querySelectorAll(".delete-review-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         if (!confirm("Delete this review permanently?")) return;
@@ -215,9 +247,11 @@ async function loadAdminData() {
     const snap = await getDocs(q);
     cachedBookings = [];
     snap.forEach((docSnap) => { cachedBookings.push({ id: docSnap.id, ...docSnap.data() }); });
+    
     document.getElementById("stat-total").innerText = cachedBookings.length;
     document.getElementById("stat-pending").innerText = cachedBookings.filter(b => b.status === "Pending").length;
     document.getElementById("stat-completed").innerText = cachedBookings.filter(b => b.status === "Completed").length;
+    
     if (cachedBookings.length === 0) {
       tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#9ca3af;">No bookings recorded yet.</td></tr>`;
       return;
@@ -236,6 +270,7 @@ async function loadAdminData() {
         </td>
       </tr>
     `).join("");
+    
     tbody.querySelectorAll(".toggle-status-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         const newStatus = btn.dataset.status === "Pending" ? "Completed" : "Pending";
@@ -270,4 +305,4 @@ if (exportBtn) {
     link.click();
     document.body.removeChild(link);
   });
-                                                                               }
+                                                                                                                                                  }
